@@ -11,8 +11,7 @@ import { CryptogramService } from '../cryptogram/cryptogram.service';
   styleUrls: ['dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  // cryptogram: Cryptogram;
-  cryptogram: any;
+  cryptogram: Cryptogram;
   connection: any;
 
 
@@ -23,11 +22,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.cryptogram = {
+      id: 0;
+      puzzle: 'this is a test';
+      solution: 'this is a solution';
+      progress: 0;
+    };
+    
     this.connection = this.cryptogramService
       .connect()
       .subscribe(cryptogram => {
         console.log('cryptogram!', cryptogram);
-        this.cryptogram = cryptogram;
+        //this.cryptogram = cryptogram;
       });
   }
 
