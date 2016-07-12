@@ -21,6 +21,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.cryptogramService.getCryptogram()
-      .then(cryptogram => this.cryptogram = cryptogram;
+      .then(cryptogram => this.cryptogram = cryptogram);
   }
 }
