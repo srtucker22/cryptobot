@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Cryptogram } from '../cryptogram/cryptogram'
@@ -10,8 +10,11 @@ import { CryptogramService } from '../cryptogram/cryptogram.service';
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
-  cryptogram: Cryptogram;
+export class DashboardComponent implements OnInit, OnDestroy {
+  // cryptogram: Cryptogram;
+  cryptogram: any;
+  connection: any;
+
 
   constructor(
     private router: Router,
@@ -20,7 +23,15 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.cryptogramService.getCryptogram()
-      .then(cryptogram => this.cryptogram = cryptogram);
+    this.connection = this.cryptogramService
+      .connect()
+      .subscribe(cryptogram => {
+        console.log('cryptogram!', cryptogram);
+        this.cryptogram = cryptogram;
+      });
+  }
+
+  ngOnDestroy() {
+    this.connection.unsubscribe();
   }
 }
