@@ -19,10 +19,10 @@ var CryptogramService = (function () {
         this.cryptogramUrl = 'http://localhost:8000'; // URL to web api
         this.oldUrl = 'app/cryptogram';
     }
-    CryptogramService.prototype.getCryptogram = function () {
-        return this.http.get(this.cryptogramUrl)
+    CryptogramService.prototype.getRandomQuote = function () {
+        return this.http.get(this.cryptogramUrl + '/files/random')
             .toPromise()
-            .then(function (response) { return response.json().data; })
+            .then(function (response) { return response.json().quote; })
             .catch(this.handleError);
     };
     CryptogramService.prototype.handleError = function (error) {

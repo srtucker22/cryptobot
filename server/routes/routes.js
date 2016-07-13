@@ -1,4 +1,4 @@
-import files from './files.routes';
+import files from './file.routes';
 
 const router = {
   files

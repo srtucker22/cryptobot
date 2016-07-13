@@ -3,10 +3,7 @@ import path from 'path';
 
 const ASSETS_LOCATION = '/assets';
 
-export function getFileSize(path) {
-  return fs.statSync(filename).size;
-}
-
+// select a random file from the assets directory
 export function getRandomFile() {
   const files = fs.readdirSync(path.join(__dirname, ASSETS_LOCATION));
   return path.join(
@@ -16,15 +13,13 @@ export function getRandomFile() {
   );
 }
 
-export function partialFSReadSync(path, start, end) {
-  if (start < 0 || end < 0 || end < start || end - start > 0x3fffffff)
-    throw new Error('bad start, end');
-  if (end - start === 0)
-    return new Buffer(0);
+// get a random quote from the file at 'path' of length 'size' that starts and ends with whole words
+export function getRandomQuote(path, size) {
+  let file = fs.readFileSync(path).toString().replace(/(?:\r\n|\r|\n)/g, ' ');
+  const start = Math.floor(Math.random() * (file.length - size));
 
-  const buf = new Buffer(end - start);
-  const fd = fs.openSync(path, 'r');
-  fs.readSync(fd, buf, 0, end - start, start);
-  fs.closeSync(fd);
-  return buf;
+  return file.substring(
+    file.indexOf(' ', start) + 1,
+    file.indexOf(' ', start + size)
+  );
 }

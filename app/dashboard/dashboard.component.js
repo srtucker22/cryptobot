@@ -16,13 +16,21 @@ var DashboardComponent = (function () {
         this.router = router;
         this.cryptogramService = cryptogramService;
     }
+    DashboardComponent.prototype.getRandomQuote = function () {
+        var _this = this;
+        this.cryptogramService.getRandomQuote()
+            .then(function (quote) {
+            console.log('quote', quote);
+            _this.cryptogram = {
+                id: 0,
+                puzzle: quote,
+                solution: quote,
+                progress: 0
+            };
+        });
+    };
     DashboardComponent.prototype.ngOnInit = function () {
-        this.cryptogram = {
-            id: 0,
-            puzzle: 'this is a test',
-            solution: 'this is a solution',
-            progress: 0
-        };
+        this.getRandomQuote();
         this.connection = this.cryptogramService
             .connect()
             .subscribe(function (cryptogram) {

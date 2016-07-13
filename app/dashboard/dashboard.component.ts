@@ -14,21 +14,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
   cryptogram: Cryptogram;
   connection: any;
 
-
   constructor(
     private router: Router,
     private cryptogramService: CryptogramService
   ) {
   }
 
+  getRandomQuote() {
+    this.cryptogramService.getRandomQuote()
+      .then(quote => {
+        console.log('quote', quote);
+        this.cryptogram = {
+          id: 0,
+          puzzle: quote,
+          solution: quote,
+          progress: 0
+        };
+      });
+  }
+
   ngOnInit() {
-    this.cryptogram = {
-      id: 0;
-      puzzle: 'this is a test';
-      solution: 'this is a solution';
-      progress: 0;
-    };
-    
+    this.getRandomQuote();
+
     this.connection = this.cryptogramService
       .connect()
       .subscribe(cryptogram => {

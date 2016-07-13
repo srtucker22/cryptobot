@@ -12,10 +12,10 @@ export class CryptogramService {
   private socket: any;
 
   constructor(private http: Http) { }
-  getCryptogram(): Promise<Cryptogram> {
-    return this.http.get(this.cryptogramUrl)
+  getRandomQuote(): Promise<string> {
+    return this.http.get(this.cryptogramUrl + '/files/random')
       .toPromise()
-      .then(response => response.json().data)
+      .then(response => response.json().quote)
       .catch(this.handleError);
   }
 
