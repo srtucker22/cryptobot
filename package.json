@@ -34,7 +34,9 @@
     "@angular/router-deprecated": "2.0.0-rc.2",
     "@angular/upgrade": "2.0.0-rc.4",
     "angular2-in-memory-web-api": "0.0.14",
+    "app-root-path": "^1.2.1",
     "bootstrap": "^3.3.6",
+    "coffee-script": "^1.10.0",
     "core-js": "^2.4.0",
     "express": "^4.14.0",
     "http": "0.0.0",
@@ -44,6 +46,7 @@
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",
     "systemjs": "0.19.27",
+    "underscore": "^1.8.3",
     "zone.js": "^0.6.12"
   },
   "devDependencies": {

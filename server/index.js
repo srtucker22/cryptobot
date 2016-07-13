@@ -3,6 +3,15 @@ import http from 'http';
 import morgan from 'morgan';
 import socketIO from 'socket.io';
 import routes from './routes/routes';
+import * as utils from './utils/utils';
+import solver from './utils/simulated-annealing';
+
+let randQuote = utils.getRandomQuote(utils.getRandomFile(), 2000);
+let puzzle = {
+  puzzle: randQuote
+};
+console.log('randQuote', randQuote);
+solver.simulatedAnnealing(puzzle);
 
 const app = express();
 const server = http.Server(app);
@@ -32,9 +41,11 @@ io.on('connection', (socket) => {
 
 app.use((req, res, next)=> {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
 app.use('/files', routes.files);
 
-server.listen(process.env.PORT, () => console.log('listening on ' + process.env.PORT));
+server.listen(process.env.PORT, () =>
+  console.log('listening on ' + process.env.PORT));
