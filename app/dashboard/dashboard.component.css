@@ -1,0 +1,27 @@
+.wrapper {
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 10px);
+}
+
+.wrapper textarea {
+  padding: 15px;
+  flex-grow: 1;
+  color: #4b853d;
+}
+
+.button-container {
+  padding: 10px 0 5px 0;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.button-container button {
+  margin: 0 3px;
+  flex-grow: 1;
+  color: #4b853d;
+  background: black;
+  border: 2px solid #4b853d;
+}

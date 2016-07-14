@@ -13,6 +13,7 @@ import { CryptogramService } from '../cryptogram/cryptogram.service';
 export class DashboardComponent implements OnInit, OnDestroy {
   cryptogram: Cryptogram;
   connection: any;
+  observable: Observable;
 
   constructor(
     private router: Router,
@@ -31,6 +32,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
           progress: 0
         };
       });
+  }
+
+  encrypt(str) {
+    const puzzle = this.cryptogramService.encrypt(str);
+    this.cryptogram = {
+      puzzle,
+      solution: puzzle,
+      progress: 0
+    };
+  }
+
+  decrypt(puzzle) {
+    this.cryptogramService.decrypt(puzzle);
   }
 
   ngOnInit() {

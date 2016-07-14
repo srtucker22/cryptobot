@@ -6,12 +6,12 @@ import routes from './routes/routes';
 import * as utils from './utils/utils';
 import solver from './utils/simulated-annealing';
 
-let randQuote = utils.getRandomQuote(utils.getRandomFile(), 2000);
-let puzzle = {
-  puzzle: randQuote
-};
-console.log('randQuote', randQuote);
-solver.simulatedAnnealing(puzzle);
+// let randQuote = utils.getRandomQuote(utils.getRandomFile(), 2000);
+// let puzzle = {
+//   puzzle: randQuote
+// };
+// console.log('randQuote', randQuote);
+// solver.simulatedAnnealing(puzzle);
 
 const app = express();
 const server = http.Server(app);

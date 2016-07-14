@@ -29,6 +29,17 @@ var DashboardComponent = (function () {
             };
         });
     };
+    DashboardComponent.prototype.encrypt = function (str) {
+        var puzzle = this.cryptogramService.encrypt(str);
+        this.cryptogram = {
+            puzzle: puzzle,
+            solution: puzzle,
+            progress: 0
+        };
+    };
+    DashboardComponent.prototype.decrypt = function (puzzle) {
+        this.cryptogramService.decrypt(puzzle);
+    };
     DashboardComponent.prototype.ngOnInit = function () {
         this.getRandomQuote();
         this.connection = this.cryptogramService

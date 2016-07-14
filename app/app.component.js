@@ -20,7 +20,7 @@ var AppComponent = (function () {
             selector: 'my-app',
             moduleId: module.id,
             styleUrls: ['app.component.css'],
-            template: "\n    <h1>{{title}}</h1>\n    <router-outlet></router-outlet>\n  ",
+            template: "\n    <router-outlet></router-outlet>\n  ",
             directives: [router_1.ROUTER_DIRECTIVES],
             providers: [
                 cryptogram_service_1.CryptogramService

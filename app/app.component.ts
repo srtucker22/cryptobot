@@ -8,7 +8,6 @@ import { CryptogramService } from './cryptogram/cryptogram.service';
   moduleId: module.id,
   styleUrls: ['app.component.css'],
   template: `
-    <h1>{{title}}</h1>
     <router-outlet></router-outlet>
   `,
   directives: [ROUTER_DIRECTIVES],
