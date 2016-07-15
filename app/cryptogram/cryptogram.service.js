@@ -42,7 +42,8 @@ var CryptogramService = (function () {
         }));
         return getCipherText(cipher, str);
     };
-    CryptogramService.prototype.decrypt = function () {
+    CryptogramService.prototype.decrypt = function (puzzle) {
+        this.socket.emit('decrypt', puzzle);
         return this.observable;
     };
     CryptogramService.prototype.handleError = function (error) {
@@ -56,6 +57,7 @@ var CryptogramService = (function () {
         var _this = this;
         this.observable = new Observable_1.Observable(function (observer) {
             _this.socket = io(_this.cryptogramUrl);
+            console.log('this.socket', _this.socket);
             _this.socket.on('data', function (data) {
                 observer.next(data);
             });

@@ -6,13 +6,6 @@ import routes from './routes/routes';
 import * as utils from './utils/utils';
 import solver from './utils/simulated-annealing';
 
-// let randQuote = utils.getRandomQuote(utils.getRandomFile(), 2000);
-// let puzzle = {
-//   puzzle: randQuote
-// };
-// console.log('randQuote', randQuote);
-// solver.simulatedAnnealing(puzzle);
-
 const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
@@ -23,20 +16,11 @@ const createStream = (query, callback) => {
 };
 
 io.on('connection', (socket) => {
-  console.log('connection', Date.now());
+  console.log('CONNECTION', Date.now());
   socket.emit('data', 'cheese');
-  // createStream(query, (err, stream) => {
-  //   if (!!err) {
-  //     console.error(err);
-  //     socket.emit('err', err);
-  //   } else {
-  //     stream.on('data', (data) => socket.emit('data', data));
-  //     stream.on('end', () => socket.emit('end'));
-  //     stream.on('error', (e) => socket.emit('err', e));
-  //   }
-  //
-  //   socket.on('disconnect', () => !!stream && stream.destroy());
-  // });
+  socket.on('decrypt', (cryptogram)=> {
+    solver.simulatedAnnealing(cryptogram.puzzle, socket);
+  });
 });
 
 app.use((req, res, next)=> {

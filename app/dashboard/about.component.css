@@ -1,0 +1,28 @@
+.wrapper {
+  background: black;
+  border: 2px solid #4b853d;
+  height: calc(100% - 48px);
+  left: 10px;
+  padding: 12px 12px;
+  position: fixed;
+  top: 10px;
+  width: calc(100% - 48px);
+}
+
+.close {
+  color: #4b853d;
+  display: table;
+  height: 20px;
+  position: absolute;
+  right: 5px;
+  text-align: center;
+  top: 5px;
+  width: 20px;
+  font-size: 20px;
+}
+
+.close div {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}

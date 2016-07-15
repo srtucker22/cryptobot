@@ -94,7 +94,12 @@ export default class Solver {
 
   // takes a Cryptogram {puzzle: string, solution: string, progress: integer(0-100)}
   // performs simulated annealing
-  static simulatedAnnealing(cryptogram) {
+  static simulatedAnnealing(cryptogram, socket) {
+    let killed = false;
+    socket.on('disconnect', () => {
+      killed = true;
+    });
+
     const fullPuzzle = cryptogram.puzzle.toLowerCase();
 
     // shorten the puzzle for faster ITERATIONS -- 2000 characters for now
@@ -128,7 +133,10 @@ export default class Solver {
     let t = T_MAX;
 
     // execute the annealing
-    while (t > T_MIN) {
+    let progressCounter = 0;
+    let progressIncrement = 100 / Math.log(ALPHA, (T_MIN / T_MAX));
+    console.log('progressIncrement', progressIncrement);
+    while (t > T_MIN && !killed) {
       let counter = 0;
       _.each(_.range(ITERATIONS), (j)=> {
         // get two random letters
@@ -175,9 +183,20 @@ export default class Solver {
       console.log('bestCipher', bestCipher);
       console.log('guess', getCipherText(bestCipher, fullPuzzle));
 
+      progressCounter++;
+      socket.emit('data', Object.assign({}, cryptogram, {
+        solution: getCipherText(bestCipher, fullPuzzle),
+        progress: progressIncrement * progressCounter
+      }));
+
       // drop the temperature and tighten our allowance for child < parent
       t *= ALPHA;
     }
+
+    socket.emit('data', Object.assign({}, cryptogram, {
+      solution: getCipherText(bestCipher, fullPuzzle),
+      progress: 100
+    }));
 
     // Guesses.update {_id: guessId}, {$set: status:
     //   'status': 'final guess',

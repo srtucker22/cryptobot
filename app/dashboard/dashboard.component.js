@@ -11,10 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var router_1 = require('@angular/router');
 var cryptogram_service_1 = require('../cryptogram/cryptogram.service');
+var loading_dialog_component_1 = require('./loading-dialog.component');
+var about_component_1 = require('./about.component');
 var DashboardComponent = (function () {
     function DashboardComponent(router, cryptogramService) {
         this.router = router;
         this.cryptogramService = cryptogramService;
+        this.info = false;
     }
     DashboardComponent.prototype.getRandomQuote = function () {
         var _this = this;
@@ -22,7 +25,6 @@ var DashboardComponent = (function () {
             .then(function (quote) {
             console.log('quote', quote);
             _this.cryptogram = {
-                id: 0,
                 puzzle: quote,
                 solution: quote,
                 progress: 0
@@ -38,24 +40,31 @@ var DashboardComponent = (function () {
         };
     };
     DashboardComponent.prototype.decrypt = function (puzzle) {
-        this.cryptogramService.decrypt(puzzle);
+        this.loading = true;
+        // this.cryptogramService.decrypt(puzzle).subscribe((cryptogram: Cryptogram) => {
+        //   //this.cryptogram = cryptogram;
+        //   if(this.cryptogram.progress < 100){
+        //     this.loading = true;
+        //   }
+        //   console.log('cryptogram!', cryptogram);
+        // });
     };
     DashboardComponent.prototype.ngOnInit = function () {
         this.getRandomQuote();
         this.connection = this.cryptogramService
-            .connect()
-            .subscribe(function (cryptogram) {
-            console.log('cryptogram!', cryptogram);
-            //this.cryptogram = cryptogram;
-        });
+            .connect();
     };
     DashboardComponent.prototype.ngOnDestroy = function () {
         this.connection.unsubscribe();
+    };
+    DashboardComponent.prototype.toggleInfo = function () {
+        this.info = !this.info;
     };
     DashboardComponent = __decorate([
         core_1.Component({
             selector: 'my-dashboard',
             moduleId: module.id,
+            directives: [loading_dialog_component_1.LoadingDialog, about_component_1.About],
             templateUrl: 'dashboard.component.html',
             styleUrls: ['dashboard.component.css']
         }), 

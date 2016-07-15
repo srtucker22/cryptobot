@@ -13,6 +13,7 @@ export class CryptogramService {
   private cryptogramUrl = 'http://localhost:8000';  // URL to web api
   private oldUrl = 'app/cryptogram';
   private socket: any;
+  private observable: Observable<any>;
 
   constructor(private http: Http) { }
   getRandomQuote(): Promise<string> {
@@ -22,9 +23,9 @@ export class CryptogramService {
       .catch(this.handleError);
   }
 
-  encrypt(str): Cryptogram {
+  encrypt(str: string): string {
     // return the deciphered puzzle
-    function getCipherText(cipher, puzzle) {
+    function getCipherText(cipher: any, puzzle: string) {
       const answer = _.map(puzzle, (x)=> {
         return _.has(cipher, x) ? cipher[x] : x;
       });
@@ -32,14 +33,15 @@ export class CryptogramService {
     }
 
     const alphabetClone = ALPHABET.slice(0).split('');
-    let cipher = _.object(_.map(ALPHABET, (letter)=>{
+    let cipher = _.object(_.map(ALPHABET, (letter: string)=>{
       let rand = Math.floor(Math.random() * alphabetClone.length);
       return [letter, alphabetClone.splice(rand, 1)[0]];
     }));
     return getCipherText(cipher, str);
   }
 
-  decrypt(): Observable {
+  decrypt(puzzle: string): Observable<any> {
+    this.socket.emit('decrypt', puzzle);
     return this.observable;
   }
 
@@ -55,6 +57,7 @@ export class CryptogramService {
   connect() {
     this.observable = new Observable((observer: any) => {
       this.socket = io(this.cryptogramUrl);
+      console.log('this.socket', this.socket);
       this.socket.on('data', (data: any) => {
         observer.next(data);
       });

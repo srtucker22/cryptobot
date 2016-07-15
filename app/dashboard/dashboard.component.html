@@ -1,8 +1,16 @@
 <div class="wrapper" *ngIf="cryptogram">
+  <div class="info" (click)="toggleInfo()">
+    <div>
+      i
+    </div>
+  </div>
+  <about *ngIf="info"></about>
   <textarea [(ngModel)]="cryptogram.puzzle" name="name"></textarea>
+  <!-- <div class="fake-textarea" *ngIf="loading">{{cryptogram.puzzle}}</div> -->
   <div class="button-container">
     <button (click)="getRandomQuote()">Random quote</button>
     <button (click)="encrypt(cryptogram.puzzle)">Encrypt</button>
     <button (click)="decrypt(cryptogram.puzzle)">Decrypt</button>
   </div>
+  <loading-dialog *ngIf="loading"></loading-dialog>
 </div>

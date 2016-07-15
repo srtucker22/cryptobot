@@ -1,14 +1,15 @@
 .wrapper {
-  padding: 5px;
   display: flex;
   flex-direction: column;
   height: calc(100% - 10px);
+  padding: 5px;
 }
 
-.wrapper textarea {
-  padding: 15px;
-  flex-grow: 1;
+.wrapper textarea, .wrapper .fake-textarea {
   color: #4b853d;
+  flex-grow: 1;
+  font-size: 14px;
+  padding: 15px;
 }
 
 .button-container {
@@ -19,9 +20,29 @@
 }
 
 .button-container button {
-  margin: 0 3px;
-  flex-grow: 1;
-  color: #4b853d;
   background: black;
   border: 2px solid #4b853d;
+  color: #4b853d;
+  flex-grow: 1;
+  margin: 0 3px;
+}
+
+.info {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  border: 2px solid #4b853d;
+  color: #4b853d;
+  display: table;
+  height: 20px;
+  position: absolute;
+  right: 10px;
+  text-align: center;
+  top: 10px;
+  width: 20px;
+}
+
+.info div {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "start": "concurrently \"npm run start:client\" \"npm run start:server\"",
     "start:client": "tsc && concurrently \"tsc -w\" \"lite-server\" ",
-    "start:server": "PORT=8000 nodemon --ignore app/ server/index.js --exec babel-node --presets es2015",
+    "start:server": "PORT=8000 nodemon server/index.js --ignore app/ --exec babel-node --presets es2015",
     "docker-build": "docker build -t ng2-quickstart .",
     "docker": "npm run docker-build && docker run -it --rm -p 3000:3000 -p 3001:3001 ng2-quickstart",
     "pree2e": "npm run webdriver:update",

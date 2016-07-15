@@ -4,16 +4,21 @@ import { Router } from '@angular/router';
 import { Cryptogram } from '../cryptogram/cryptogram'
 import { CryptogramService } from '../cryptogram/cryptogram.service';
 
+import { LoadingDialog } from './loading-dialog.component';
+import { About } from './about.component';
+
 @Component({
   selector: 'my-dashboard',
   moduleId: module.id,
+  directives: [LoadingDialog, About],
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   cryptogram: Cryptogram;
   connection: any;
-  observable: Observable;
+  info: boolean = false;
+  loading: boolean;
 
   constructor(
     private router: Router,
@@ -26,7 +31,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .then(quote => {
         console.log('quote', quote);
         this.cryptogram = {
-          id: 0,
           puzzle: quote,
           solution: quote,
           progress: 0
@@ -34,7 +38,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  encrypt(str) {
+  encrypt(str: string) {
     const puzzle = this.cryptogramService.encrypt(str);
     this.cryptogram = {
       puzzle,
@@ -43,22 +47,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
   }
 
-  decrypt(puzzle) {
-    this.cryptogramService.decrypt(puzzle);
+  decrypt(puzzle: string) {
+    this.loading = true;
+    // this.cryptogramService.decrypt(puzzle).subscribe((cryptogram: Cryptogram) => {
+    //   //this.cryptogram = cryptogram;
+    //   if(this.cryptogram.progress < 100){
+    //     this.loading = true;
+    //   }
+    //   console.log('cryptogram!', cryptogram);
+    // });
   }
 
   ngOnInit() {
     this.getRandomQuote();
 
     this.connection = this.cryptogramService
-      .connect()
-      .subscribe(cryptogram => {
-        console.log('cryptogram!', cryptogram);
-        //this.cryptogram = cryptogram;
-      });
+      .connect();
   }
 
   ngOnDestroy() {
     this.connection.unsubscribe();
+  }
+
+  toggleInfo() {
+    this.info = !this.info;
   }
 }

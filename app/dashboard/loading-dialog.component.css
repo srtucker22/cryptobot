@@ -1,0 +1,43 @@
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.wrapper .inner {
+  color: #4b853d;
+  text-align: center;
+  position: absolute;
+  top: 40%;
+  width: 100%;
+}
+
+.wrapper .inner .loading {
+  background: black;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: 2px solid #4b853d;
+  display: inline-block;
+}
+
+.wrapper .inner .bar-outer {
+  margin-top: 20px;
+  background: black;
+  text-transform: uppercase;
+  border: 2px solid #4b853d;
+  padding: 1px;
+  display: inline-block;
+  height: 20px;
+  width: 60%;
+}
+
+.wrapper .inner .bar-inner {
+  float: left;
+  display: inline-block;
+  background: #4b853d;
+  width: calc(60%/10);
+  height: 18px;
+  margin: 1px;
+}
