@@ -20,6 +20,8 @@ var CryptogramService = (function () {
         this.http = http;
         this.cryptogramUrl = 'http://localhost:8000'; // URL to web api
         this.oldUrl = 'app/cryptogram';
+        this.socket = io(this.cryptogramUrl);
+        console.log('this.socket', this.socket);
     }
     CryptogramService.prototype.getRandomQuote = function () {
         return this.http.get(this.cryptogramUrl + '/files/random')
@@ -31,19 +33,31 @@ var CryptogramService = (function () {
         // return the deciphered puzzle
         function getCipherText(cipher, puzzle) {
             var answer = _.map(puzzle, function (x) {
-                return _.has(cipher, x) ? cipher[x] : x;
+                return _.has(cipher, x.toLowerCase()) ? (x == x.toLowerCase() ? cipher[x] : cipher[x.toLowerCase()].toUpperCase()) : x;
             });
             return answer.join('');
         }
-        var alphabetClone = ALPHABET.slice(0).split('');
-        var cipher = _.object(_.map(ALPHABET, function (letter) {
-            var rand = Math.floor(Math.random() * alphabetClone.length);
-            return [letter, alphabetClone.splice(rand, 1)[0]];
+        var shuffled = _.shuffle(ALPHABET);
+        var cipher = _.object(_.map(ALPHABET, function (letter, index) {
+            return [letter, shuffled[index]];
         }));
         return getCipherText(cipher, str);
     };
     CryptogramService.prototype.decrypt = function (puzzle) {
-        this.socket.emit('decrypt', puzzle);
+        var _this = this;
+        this.socket.emit('decrypt', {
+            puzzle: puzzle,
+            progress: 0
+        });
+        this.observable = new Observable_1.Observable(function (observer) {
+            _this.socket.on('data', function (data) {
+                console.log('data', data);
+                observer.next(data);
+            });
+            return function () {
+                _this.socket.disconnect();
+            };
+        });
         return this.observable;
     };
     CryptogramService.prototype.handleError = function (error) {
@@ -52,20 +66,6 @@ var CryptogramService = (function () {
     };
     CryptogramService.prototype.solveRequest = function (cryptogram) {
         this.socket.emit('solve', cryptogram);
-    };
-    CryptogramService.prototype.connect = function () {
-        var _this = this;
-        this.observable = new Observable_1.Observable(function (observer) {
-            _this.socket = io(_this.cryptogramUrl);
-            console.log('this.socket', _this.socket);
-            _this.socket.on('data', function (data) {
-                observer.next(data);
-            });
-            return function () {
-                _this.socket.disconnect();
-            };
-        });
-        return this.observable;
     };
     CryptogramService = __decorate([
         core_1.Injectable(), 

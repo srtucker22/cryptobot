@@ -1,8 +1,18 @@
+pre {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
 .wrapper {
   background: black;
   border: 2px solid #4b853d;
+  color: #4b853d;
   height: calc(100% - 48px);
   left: 10px;
+  overflow-y: scroll;
   padding: 12px 12px;
   position: fixed;
   top: 10px;

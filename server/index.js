@@ -17,9 +17,8 @@ const createStream = (query, callback) => {
 
 io.on('connection', (socket) => {
   console.log('CONNECTION', Date.now());
-  socket.emit('data', 'cheese');
   socket.on('decrypt', (cryptogram)=> {
-    solver.simulatedAnnealing(cryptogram.puzzle, socket);
+    solver.simulatedAnnealing(cryptogram, socket);
   });
 });
 

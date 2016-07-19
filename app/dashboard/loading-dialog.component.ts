@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import * as _ from 'underscore';
+import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'loading-dialog',
@@ -6,10 +7,15 @@ import { Component } from '@angular/core';
   templateUrl: 'loading-dialog.component.html',
   styleUrls: ['loading-dialog.component.css']
 })
-export class LoadingDialog {
-  bars: boolean[] = [true, true];
+export class LoadingDialog implements OnChanges {
+  @Input() progress: number;
+  bars: number[];
 
   constructor(
   ) {
+  }
+
+  ngOnChanges(changes: any) {
+    this.bars = _.range(Math.floor(this.progress/10));
   }
 }

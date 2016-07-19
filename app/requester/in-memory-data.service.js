@@ -4,9 +4,7 @@ var InMemoryDataService = (function () {
     }
     InMemoryDataService.prototype.createDb = function () {
         var cryptogram = {
-            id: 1,
             puzzle: 'i am a puzzle',
-            solution: 'i am a solution',
             progress: 100
         };
         return { cryptogram: cryptogram };

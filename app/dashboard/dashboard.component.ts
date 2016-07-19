@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Cryptogram } from '../cryptogram/cryptogram'
@@ -19,6 +19,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   connection: any;
   info: boolean = false;
   loading: boolean;
+  public boundClose: Function;
 
   constructor(
     private router: Router,
@@ -32,7 +33,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.log('quote', quote);
         this.cryptogram = {
           puzzle: quote,
-          solution: quote,
           progress: 0
         };
       });
@@ -42,27 +42,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const puzzle = this.cryptogramService.encrypt(str);
     this.cryptogram = {
       puzzle,
-      solution: puzzle,
       progress: 0
     };
   }
 
   decrypt(puzzle: string) {
     this.loading = true;
-    // this.cryptogramService.decrypt(puzzle).subscribe((cryptogram: Cryptogram) => {
-    //   //this.cryptogram = cryptogram;
-    //   if(this.cryptogram.progress < 100){
-    //     this.loading = true;
-    //   }
-    //   console.log('cryptogram!', cryptogram);
-    // });
+    this.cryptogramService.decrypt(puzzle).subscribe((cryptogram: Cryptogram) => {
+      this.cryptogram = cryptogram;
+      if(this.cryptogram.progress < 100){
+        this.loading = true;
+      } else {
+        this.loading = false;
+      }
+    });
+  }
+
+  close() {
+    this.info = false;
   }
 
   ngOnInit() {
     this.getRandomQuote();
-
-    this.connection = this.cryptogramService
-      .connect();
+    this.boundClose = this.close.bind(this);
   }
 
   ngOnDestroy() {

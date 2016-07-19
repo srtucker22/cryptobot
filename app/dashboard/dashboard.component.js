@@ -26,7 +26,6 @@ var DashboardComponent = (function () {
             console.log('quote', quote);
             _this.cryptogram = {
                 puzzle: quote,
-                solution: quote,
                 progress: 0
             };
         });
@@ -35,24 +34,28 @@ var DashboardComponent = (function () {
         var puzzle = this.cryptogramService.encrypt(str);
         this.cryptogram = {
             puzzle: puzzle,
-            solution: puzzle,
             progress: 0
         };
     };
     DashboardComponent.prototype.decrypt = function (puzzle) {
+        var _this = this;
         this.loading = true;
-        // this.cryptogramService.decrypt(puzzle).subscribe((cryptogram: Cryptogram) => {
-        //   //this.cryptogram = cryptogram;
-        //   if(this.cryptogram.progress < 100){
-        //     this.loading = true;
-        //   }
-        //   console.log('cryptogram!', cryptogram);
-        // });
+        this.cryptogramService.decrypt(puzzle).subscribe(function (cryptogram) {
+            _this.cryptogram = cryptogram;
+            if (_this.cryptogram.progress < 100) {
+                _this.loading = true;
+            }
+            else {
+                _this.loading = false;
+            }
+        });
+    };
+    DashboardComponent.prototype.close = function () {
+        this.info = false;
     };
     DashboardComponent.prototype.ngOnInit = function () {
         this.getRandomQuote();
-        this.connection = this.cryptogramService
-            .connect();
+        this.boundClose = this.close.bind(this);
     };
     DashboardComponent.prototype.ngOnDestroy = function () {
         this.connection.unsubscribe();

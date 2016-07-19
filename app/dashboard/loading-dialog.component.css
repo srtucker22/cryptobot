@@ -37,7 +37,7 @@
   float: left;
   display: inline-block;
   background: #4b853d;
-  width: calc(60%/10);
+  width: calc(10% - 2px);
   height: 18px;
   margin: 1px;
 }

@@ -15,7 +15,11 @@ export class CryptogramService {
   private socket: any;
   private observable: Observable<any>;
 
-  constructor(private http: Http) { }
+  constructor(private http: Http) {
+    this.socket = io(this.cryptogramUrl);
+    console.log('this.socket', this.socket);
+  }
+
   getRandomQuote(): Promise<string> {
     return this.http.get(this.cryptogramUrl + '/files/random')
       .toPromise()
@@ -26,22 +30,34 @@ export class CryptogramService {
   encrypt(str: string): string {
     // return the deciphered puzzle
     function getCipherText(cipher: any, puzzle: string) {
-      const answer = _.map(puzzle, (x)=> {
-        return _.has(cipher, x) ? cipher[x] : x;
+      const answer = _.map(puzzle, (x: string)=> {
+        return _.has(cipher, x.toLowerCase()) ? (x == x.toLowerCase() ? cipher[x] : cipher[x.toLowerCase()].toUpperCase()) : x;
       });
       return answer.join('');
     }
 
-    const alphabetClone = ALPHABET.slice(0).split('');
-    let cipher = _.object(_.map(ALPHABET, (letter: string)=>{
-      let rand = Math.floor(Math.random() * alphabetClone.length);
-      return [letter, alphabetClone.splice(rand, 1)[0]];
+    const shuffled = _.shuffle(ALPHABET);
+    let cipher = _.object(_.map(ALPHABET, (letter: string, index: number)=>{
+      return [letter, shuffled[index]];
     }));
     return getCipherText(cipher, str);
   }
 
   decrypt(puzzle: string): Observable<any> {
-    this.socket.emit('decrypt', puzzle);
+    this.socket.emit('decrypt', {
+      puzzle,
+      progress: 0
+    });
+
+    this.observable = new Observable((observer: any) => {
+      this.socket.on('data', (data: any) => {
+        console.log('data', data);
+        observer.next(data);
+      });
+      return () => {
+        this.socket.disconnect();
+      };
+    });
     return this.observable;
   }
 
@@ -52,19 +68,5 @@ export class CryptogramService {
 
   solveRequest(cryptogram: Cryptogram){
     this.socket.emit('solve', cryptogram);
-  }
-
-  connect() {
-    this.observable = new Observable((observer: any) => {
-      this.socket = io(this.cryptogramUrl);
-      console.log('this.socket', this.socket);
-      this.socket.on('data', (data: any) => {
-        observer.next(data);
-      });
-      return () => {
-        this.socket.disconnect();
-      };
-    });
-    return this.observable;
   }
 }

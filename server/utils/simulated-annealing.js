@@ -1,5 +1,6 @@
 import * as utils from './utils';
 import _ from 'underscore';
+import doUntil from 'async/doUntil';
 
 // ITERATIONS per temperature
 const ITERATIONS = 2000;
@@ -54,7 +55,9 @@ function occurrences(string, subString, allowOverlapping = true) {
 // return the deciphered puzzle
 function getCipherText(cipher, puzzle) {
   const answer = _.map(puzzle, (x)=> {
-    return _.has(cipher, x) ? cipher[x] : x;
+    return _.has(cipher, x.toLowerCase()) ?
+      (x == x.toLowerCase() ? cipher[x] :
+        cipher[x.toLowerCase()].toUpperCase()) : x;
   });
   return answer.join('');
 }
@@ -92,15 +95,16 @@ export default class Solver {
     console.log('expectedSortedLetterFrequencies', expectedSortedLetterFrequencies);
   }
 
-  // takes a Cryptogram {puzzle: string, solution: string, progress: integer(0-100)}
+  // takes a Cryptogram {puzzle: string, progress: integer(0-100)}
   // performs simulated annealing
   static simulatedAnnealing(cryptogram, socket) {
+    console.log('cryptogram starting', cryptogram.puzzle);
     let killed = false;
     socket.on('disconnect', () => {
       killed = true;
     });
 
-    const fullPuzzle = cryptogram.puzzle.toLowerCase();
+    const fullPuzzle = cryptogram.puzzle;
 
     // shorten the puzzle for faster ITERATIONS -- 2000 characters for now
     let puzzle;
@@ -128,15 +132,21 @@ export default class Solver {
     let bestCipher = _.clone(cipher);
     let bestCost = parentCost;
 
-    // TODO: update the guess object here
-
-    let t = T_MAX;
+    let temp = T_MAX;
 
     // execute the annealing
     let progressCounter = 0;
-    let progressIncrement = 100 / Math.log(ALPHA, (T_MIN / T_MAX));
-    console.log('progressIncrement', progressIncrement);
-    while (t > T_MIN && !killed) {
+    let progressIncrement = 100 / (
+      Math.log(T_MIN / T_MAX) / Math.log(ALPHA)
+    );
+
+    // first update
+    socket.emit('data', Object.assign({}, cryptogram, {
+      puzzle: getCipherText(bestCipher, fullPuzzle),
+      progress: progressIncrement * progressCounter
+    }));
+
+    function fn(t) {
       let counter = 0;
       _.each(_.range(ITERATIONS), (j)=> {
         // get two random letters
@@ -179,31 +189,24 @@ export default class Solver {
         counter += 1;
       });
 
-      console.log('temp', t);
-      console.log('bestCipher', bestCipher);
-      console.log('guess', getCipherText(bestCipher, fullPuzzle));
-
-      progressCounter++;
+      console.log('emitting', progressIncrement * progressCounter);
+      console.log(fullPuzzle, bestCipher, getCipherText(bestCipher, fullPuzzle));
       socket.emit('data', Object.assign({}, cryptogram, {
-        solution: getCipherText(bestCipher, fullPuzzle),
+        puzzle: getCipherText(bestCipher, fullPuzzle),
         progress: progressIncrement * progressCounter
       }));
+      progressCounter++;
 
       // drop the temperature and tighten our allowance for child < parent
-      t *= ALPHA;
+      setTimeout(()=> {
+        if (t < T_MIN) {
+          console.log(fullPuzzle, bestCipher, getCipherText(bestCipher, fullPuzzle));
+          return;
+        }
+
+        fn(t * ALPHA);
+      }, 0);
     }
-
-    socket.emit('data', Object.assign({}, cryptogram, {
-      solution: getCipherText(bestCipher, fullPuzzle),
-      progress: 100
-    }));
-
-    // Guesses.update {_id: guessId}, {$set: status:
-    //   'status': 'final guess',
-    //   'cipher': bestCipher,
-    //   'cost': bestCost,
-    //   'guess': getCipherText bestCipher, fullPuzzle,
-    //   'temperature' : t
-    // }
+    fn(temp);
   }
 };

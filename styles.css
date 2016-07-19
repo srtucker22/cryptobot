@@ -4,8 +4,21 @@ html, body {
   margin: 0;
   height: 100%;
   font-family: 'Share Tech Mono';
-  color: white;
   background: black;
+}
+
+.preloader {
+  height: 100%;
+  width: 100%;
+  display: table;
+  color: #4b853d;
+  text-align: center;
+  font-size: 16px;
+}
+
+.preloader > div {
+  display: table-cell;
+  vertical-align: middle;
 }
 
 textarea {

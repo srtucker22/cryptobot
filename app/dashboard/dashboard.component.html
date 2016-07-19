@@ -1,16 +1,24 @@
 <div class="wrapper" *ngIf="cryptogram">
+  <!-- <div contenteditable="true" [textContent]="cryptogram.puzzle" (input)="cryptogram.puzzle=$event.target.textContent">
+
+  </div> -->
+  <textarea [(ngModel)]="cryptogram.puzzle" name="name"></textarea>
+  <div class="button-container">
+    <button [disabled]="loading" (click)="getRandomQuote()">
+      Random quote
+    </button>
+    <button [disabled]="loading" (click)="encrypt(cryptogram.puzzle)">
+      Encrypt
+    </button>
+    <button [disabled]="loading" (click)="decrypt(cryptogram.puzzle)">
+      Decrypt
+    </button>
+  </div>
+  <loading-dialog *ngIf="loading" [progress]="cryptogram.progress"></loading-dialog>
   <div class="info" (click)="toggleInfo()">
     <div>
       i
     </div>
   </div>
-  <about *ngIf="info"></about>
-  <textarea [(ngModel)]="cryptogram.puzzle" name="name"></textarea>
-  <!-- <div class="fake-textarea" *ngIf="loading">{{cryptogram.puzzle}}</div> -->
-  <div class="button-container">
-    <button (click)="getRandomQuote()">Random quote</button>
-    <button (click)="encrypt(cryptogram.puzzle)">Encrypt</button>
-    <button (click)="decrypt(cryptogram.puzzle)">Decrypt</button>
-  </div>
-  <loading-dialog *ngIf="loading"></loading-dialog>
+  <about *ngIf="info" [close]="boundClose"></about>
 </div>
