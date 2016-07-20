@@ -27,31 +27,6 @@ const mobyDick = utils.getText(filename);
 const expectedDigramFrequencies = getFrequencies(mobyDick, digrams);
 const expectedSortedLetterFrequencies = getSortedLetterFrequencies(mobyDick);
 
-function occurrences(string, subString, allowOverlapping = true) {
-  string += '';
-  subString += '';
-
-  if (subString.length <= 0) {
-    return string.length + 1;
-  }
-
-  let n = 0;
-  let pos = 0;
-  let step = allowOverlapping ? 1 : subString.length;
-
-  while (true) {
-    pos = string.indexOf(subString, pos);
-    if (pos >= 0) {
-      n++;
-      pos += step;
-    } else {
-      break;
-    }
-  }
-
-  return n;
-}
-
 // return the deciphered puzzle
 function getCipherText(cipher, puzzle) {
   const answer = _.map(puzzle, (x)=> {
@@ -65,11 +40,24 @@ function getCipherText(cipher, puzzle) {
 // get the frequency of occurrences of all ngrams within a given text
 // e.g {'aa': 1, 'ab': 10} = 'ab' showed up 10 times in the text
 function getFrequencies(text, ngrams = digrams) {
-  const ngramCounts = _.map(ngrams, (ngram)=> {
-    return occurrences(text, ngram);
+  let sublength = ngrams[0].length;
+  let frequencies = {};
+  _.each(ngrams, (ngram)=> {
+    frequencies[ngram] = 0;
   });
-  const ngramTotal = _.reduce(ngramCounts, (t, s) => t + s);
-  return _.object(ngrams, _.map(ngramCounts, count => count / ngramTotal));
+
+  for (let i = 0; i <= text.length - sublength; i++) {
+    let sub = text.substring(i, i + sublength).toLowerCase();
+    if (frequencies[sub] !== undefined) {
+      frequencies[sub]++;
+    }
+  }
+
+  let totalCount = _.reduce(_.map(frequencies, x => x), (x, y)=> x + y);
+  _.each(frequencies, (v, k)=> {
+    frequencies[k] = v / totalCount;
+  });
+  return frequencies;
 }
 
 // sort letters of the alphabet by their frequency within the text
@@ -82,8 +70,7 @@ function getSortedLetterFrequencies(text) {
 
 // get the cost of the cipher
 // cost = sum(abs(expected digram frequency - observed digram frequency)) for all digrams
-function cost(cipherText) {
-  const cipherDigramFrequency = getFrequencies(cipherText, digrams);
+function cost(cipherDigramFrequency) {
   return _.reduce(_.map(cipherDigramFrequency, (val, key)=> {
     return Math.abs(val - expectedDigramFrequencies[key]);
   }), (t, s)=> t + s);
@@ -127,7 +114,8 @@ export default class Solver {
     }));
 
     let cipherText = getCipherText(cipher, puzzle);
-    let parentCost = cost(cipherText);
+    let parentFrequencies = getFrequencies(cipherText);
+    let parentCost = cost(parentFrequencies);
 
     let bestCipher = _.clone(cipher);
     let bestCost = parentCost;
@@ -160,11 +148,29 @@ export default class Solver {
         childCipher[a] = childCipher[b];
         childCipher[b] = temp;
 
+        // simplified algorithm for efficiency -- runs O(letters) times
+        // alternative would run O(ngram) times but would work for more than digrams
+        let childFreqencies = _.clone(parentFrequencies);
+        _.each(letters, (l)=> {
+          let original = getCipherText(cipher, l + a);
+          let replacement = getCipherText(childCipher, l + a);
+          childFreqencies[replacement] = parentFrequencies[original];
+          childFreqencies[original] = parentFrequencies[replacement];
+
+          original = getCipherText(cipher, a + l);
+          replacement = getCipherText(childCipher, a + l);
+          childFreqencies[replacement] = parentFrequencies[original];
+          childFreqencies[original] = parentFrequencies[replacement];
+        });
+
+        childFreqencies[getCipherText(childCipher, a + b)] = parentFrequencies[getCipherText(cipher, a + b)];
+
         // get the cost of the new cipher
-        let childCost = cost(getCipherText(childCipher, puzzle));
+        let childCost = cost(childFreqencies);
 
         // if the child is better than the parent, child is the new parent
         if (childCost < parentCost) {
+          parentFrequencies = childFreqencies;
           parentCost = childCost;
           cipher = childCipher;
 
@@ -181,6 +187,7 @@ export default class Solver {
           let p = Math.pow(Math.E, ((parentCost - childCost) / t));
 
           if (p > r) {
+            parentFrequencies = childFreqencies;
             parentCost = childCost;
             cipher = childCipher;
           }
